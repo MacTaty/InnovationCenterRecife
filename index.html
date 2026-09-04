@@ -1530,8 +1530,7 @@
         Conte-nos sobre o desafio que quer explorar. Entraremos em contato para construir a experiência certa.
       </p>
 
-      <!-- data-api-url: URL do backend em produção. Ex: https://api.seudominio.com/api/contato -->
-      <form id="contact-form" class="contact-form" novalidate data-api-url="http://localhost:5000/api/contato">
+      <form id="contact-form" class="contact-form" novalidate>
         <div class="form-row">
           <div class="form-field">
             <label for="f-name">Nome</label>
@@ -1590,36 +1589,18 @@
 
         if (!nome || !empresa || !email || !mensagem) return;
 
-        var btn      = form.querySelector('[type="submit"]');
-        var feedback = document.getElementById('form-feedback');
-        var apiUrl   = form.dataset.apiUrl;
+        var destinatario = 'philippe.fontes@accenture.com';
+        var cc           = 'carla.b.nascimento@accenture.com';
+        var assunto      = 'Innovation Center Recife — ' + empresa;
+        var corpo        = 'Nome: ' + nome + '\nEmpresa: ' + empresa + '\nE-mail: ' + email + '\n\n' + mensagem;
 
-        btn.disabled    = true;
-        btn.textContent = 'Enviando…';
-        feedback.className   = 'form-feedback';
-        feedback.textContent = '';
+        var mailto = 'mailto:' + destinatario
+          + '?cc='      + encodeURIComponent(cc)
+          + '&subject=' + encodeURIComponent(assunto)
+          + '&body='    + encodeURIComponent(corpo);
 
-        fetch(apiUrl, {
-          method:  'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify({ nome: nome, empresa: empresa, email: email, mensagem: mensagem })
-        })
-        .then(function (res) { return res.json(); })
-        .then(function (data) {
-          if (data.ok) {
-            feedback.className   = 'form-feedback form-feedback--success';
-            feedback.textContent = 'Mensagem enviada! Entraremos em contato em breve.';
-            setTimeout(function () { modal.close(); form.reset(); }, 2200);
-          } else {
-            throw new Error(data.erro || 'Erro desconhecido.');
-          }
-        })
-        .catch(function (err) {
-          feedback.className   = 'form-feedback form-feedback--error';
-          feedback.textContent = err.message || 'Falha ao enviar. Tente novamente.';
-          btn.disabled    = false;
-          btn.textContent = 'Enviar';
-        });
+        window.location.href = mailto;
+        setTimeout(function () { modal.close(); form.reset(); }, 500);
       });
     })();
   </script>
